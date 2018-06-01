@@ -1,0 +1,18 @@
+net: "../fine-tune/train_val.prototxt"
+display: 100
+average_loss: 100
+lr_policy: "multistep"
+# lr for unnormalized softmax -- see train_val definition
+base_lr: 1e-10
+stepvalue: 50000
+gamma: 0.1
+# high momentum
+momentum: 0.99
+# no gradient accumulation
+iter_size: 1
+max_iter: 100000
+weight_decay: 0.005
+snapshot: 20000
+snapshot_prefix: "../fine-tune/Refcn-8s"
+test_initialization: false
+#clip_gradients: 10

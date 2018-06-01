@@ -1,0 +1,36 @@
+% compute PR_curve for itti model
+clear all
+clc
+fid = fopen('C:\Itti_data.txt','wt');
+mask_dir = 'C:\binarymasks\binarymasks\*.bmp';
+itti_dir = 'C:\Itti_saliency\Itti_';
+maskim = dir(mask_dir);
+P_mat(256) = 0;
+R_mat(256) = 0;
+for i = 0:255
+    precision = 0;
+    recall = 0;
+    for j = 1:1000
+        imname = maskim(j).name;
+        mask1 = im2double(imread([mask_dir(1:end-5),imname]));
+        mask = mask1(:,:,1);
+        [r,c] = size(mask);
+        Itti_binary(r,c) = 0;
+        itti = imread([itti_dir,imname(1: end-4),'.jpg']);
+        ind = find(itti>=i);
+        Itti_binary(ind) = 1;
+        det_truth = sum(sum(Itti_binary.*mask));
+        precision = precision + det_truth/sum(Itti_binary(:));
+        recall = recall + det_truth/sum(mask(:));
+        clear Itti_binary mask;
+    end
+    P_mat(i+1) = precision/1000;
+    R_mat(i+1) = recall/1000;
+    fprintf(fid,'%1.5f,%1.5f', P_mat(i+1), P_mat(i+1));
+end
+plot(R_mat,P_mat);
+set(gca,'XTick',0:0.1:1);
+set(gca,'YTick',0:0.1:1);
+set(findobj(gca,'Type','line','Color',[0 0 1]),...
+    'Color','red')
+fclose(fid);
